@@ -15,8 +15,9 @@ a few images, and keep the Git history.
 ## In the Kaggle notebook
 
 ```python
-# 1. Install the few libraries Kaggle doesn't ship by default
-!pip install -q lime wandb "transformers>=4.40" "datasets>=2.19"
+# 1. Install only the libraries Kaggle lacks. We do NOT reinstall torch:
+#    Kaggle already ships a GPU build, and replacing it can break the GPU.
+!pip install -q lime wandb -U "transformers>=4.41" "datasets>=2.19"
 
 # 2. Log in to Weights & Biases using the Kaggle secret
 from kaggle_secrets import UserSecretsClient
@@ -24,13 +25,19 @@ import os, wandb
 os.environ["WANDB_API_KEY"] = UserSecretsClient().get_secret("WANDB_API_KEY")
 wandb.login()
 
-# 3. Pull this project's code (push it to GitHub first), then train
-!git clone https://github.com/<your-username>/skin-lesion-xai.git
+# 3. Pull this project's code, then install it WITHOUT touching dependencies
+#    (--no-deps keeps Kaggle's existing GPU torch in place)
+!git clone https://github.com/haroonmariyam/skin-lesion-xai.git
 %cd skin-lesion-xai
-!pip install -e .
+!pip install -e . --no-deps
 
+# 4. Smoke-test first (10% of data, 1 epoch) to confirm everything runs:
 from skin_lesion_xai import train
-train.train(model_key="vit")      # then repeat with "resnet"
+train.train(model_key="vit", subset_fraction=0.1, epochs=1)
+
+# 5. Once that works, do the full runs (one per model):
+# train.train(model_key="vit")
+# train.train(model_key="resnet")
 ```
 
 ## After training
