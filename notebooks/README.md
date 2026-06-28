@@ -25,13 +25,16 @@ import os, wandb
 os.environ["WANDB_API_KEY"] = UserSecretsClient().get_secret("WANDB_API_KEY")
 wandb.login()
 
-# 3. Pull this project's code, then install it WITHOUT touching dependencies
-#    (--no-deps keeps Kaggle's existing GPU torch in place)
+# 3. Pull this project's code
 !git clone https://github.com/haroonmariyam/skin-lesion-xai.git
-%cd skin-lesion-xai
-!pip install -e . --no-deps
 
-# 4. Smoke-test first (10% of data, 1 epoch) to confirm everything runs:
+# 4. Make the package importable. Pointing Python at the source folder is the
+#    most reliable approach on Kaggle (editable pip installs can fail to
+#    register on the kernel's import path).
+import sys
+sys.path.insert(0, "/kaggle/working/skin-lesion-xai/src")
+
+# 5. Smoke-test first (10% of data, 1 epoch) to confirm everything runs:
 from skin_lesion_xai import train
 train.train(model_key="vit", subset_fraction=0.1, epochs=1)
 
