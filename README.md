@@ -12,6 +12,27 @@ Biases, and packaged reproducibly with UV.
 
 ---
 
+## ⚠️ Project status & disclosure
+
+> **Work in progress — not yet independently reviewed, tested, or reproduced.**
+> The results reported here come from initial training runs and a small,
+> qualitative LIME analysis (5 test images). They have **not** been
+> independently verified, the experiments have not been repeated across multiple
+> seeds, and the code has not undergone formal review. Treat all numbers and
+> conclusions as **preliminary**. This is a learning/portfolio project and is
+> **not** intended for clinical or diagnostic use.
+
+> **AI assistance disclosure:** This project was built with the assistance of
+> **Claude Code** (Anthropic's agentic coding tool), partly as a test case to
+> evaluate how such tools perform on a real, end-to-end machine-learning
+> workflow (environment setup, training on Kaggle, experiment tracking, and
+> explainability). The methodology, decisions, and results were directed and
+> reviewed by the author, but readers should be aware that significant portions
+> of the scaffolding, code, and documentation were AI-assisted and still warrant
+> careful human verification.
+
+---
+
 ## Objectives
 
 1. **Build a reproducible pipeline** to fine-tune image classifiers on the
