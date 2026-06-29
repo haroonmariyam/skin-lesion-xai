@@ -43,10 +43,28 @@ train.train(model_key="vit", subset_fraction=0.1, epochs=1)
 # train.train(model_key="resnet")
 ```
 
-## After training
+## Saving the trained models off Kaggle
 
-- Download the saved model folder from the Kaggle notebook's **Output** tab.
-- Place it under `models/` on your laptop.
+Models are saved under the project's own `models/` folder, which on Kaggle is
+inside the cloned repo. Zip each one and download it from the **Output** panel.
+This `glob` finds the model wherever it lives, so the path never bites you:
+
+```python
+import shutil, glob
+for key in ["vit", "resnet"]:
+    found = glob.glob(f"/kaggle/working/**/models/{key}-ham10000-binary",
+                      recursive=True)
+    if found:
+        shutil.make_archive(f"/kaggle/working/{key}_model", "zip", found[0])
+        print(f"✅ {key}: zipped from {found[0]}")
+    else:
+        print(f"⚠️ {key}: no model found — train it first")
+```
+
+## After downloading
+
+- Unzip each model into `models/` on your laptop, e.g.
+  `models/vit-ham10000-binary/` and `models/resnet-ham10000-binary/`.
 - Run `uv run python scripts/03_explain.py --model-dir models/<name>` locally to
   generate the LIME figures for your report.
 
