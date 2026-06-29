@@ -82,31 +82,49 @@ Confusion matrices: see `reports/figures/`.
 
 ## 6. Explainability analysis (LIME)
 
-For each model, LIME was run on the same test images. Compare the highlighted
-regions:
-
-- Do both models focus on the **lesion** itself, or on surrounding skin /
-  artifacts (hair, ruler marks, ink)?
-- On **correct** predictions, are the explanations clinically plausible?
-- On **incorrect** predictions, does LIME reveal a spurious focus?
+LIME was run on the **same 5 test lesions** for both models (1000 perturbations
+per image, top-6 positive superpixels shown). Both models classified all 5
+images **correctly and identically** (3 benign, 2 malignant) — so any
+difference is in *reasoning*, not the prediction.
 
 | Observation | ViT | ResNet-50 |
 |-------------|-----|-----------|
-| Focuses on lesion centre | | |
-| Sensitive to artifacts | | |
-| Agreement on shared images | | |
+| Focus on the lesion (malignant cases) | Tight, concentrated **on the lesion** | More **scattered**, often on peripheral skin |
+| Focus on benign cases | Diffuse / peripheral skin | Diffuse / peripheral skin |
+| Predictions on shared images | 5/5 correct | 5/5 correct (full agreement with ViT) |
+| Explanation plausibility (malignant) | Higher — highlights the pigmented lesion | Lower — highlights normal skin at the edges |
+
+**Per-image notes (malignant):** on `lime_*_03`, ViT placed a single tight
+region directly on the central pigmented lesion, whereas ResNet's important
+regions sat in the image corners (normal skin). The same pattern appears on
+`lime_*_00`. On **benign** cases, both models relied on diffuse, peripheral
+regions — reasonable, since "benign" is partly evidenced by the *absence* of
+malignant features in the surrounding skin.
 
 LIME figures: see `reports/figures/lime_*.png`.
 
 ## 7. Discussion & conclusions
 
-_(2–3 paragraphs: which model you'd trust more and why — combine the metrics
-with the explanation quality. A model that is slightly less accurate but
-consistently looks at the lesion may be preferable in a medical setting.)_
+Both architectures reached near-identical, strong predictive performance
+(accuracy ≈ 0.98–0.99) and agreed on every shared test image. The
+explainability analysis, however, revealed a difference the metrics alone hide:
+**on malignant cases, ViT's explanations were consistently more lesion-focused**,
+while ResNet — despite its marginally higher recall — more often based its
+decision on peripheral skin regions. In a medical screening setting, a model
+whose reasoning concentrates on the actual lesion is easier to trust and audit,
+even if a competing model scores a fraction higher on a metric.
+
+This is the central lesson of the project: **accuracy and explainability are
+distinct axes of model quality.** Two models can be statistically
+indistinguishable yet arrive at their answers by attending to very different
+evidence — which only becomes visible through a tool like LIME.
 
 ## 8. Limitations & future work
 
-- Binary collapse loses fine-grained diagnostic information.
-- LIME explanations are approximate and can vary between runs.
-- Possible extensions: add a third model, try Grad-CAM or SHAP alongside LIME,
-  or address class imbalance with weighted loss / augmentation.
+- Only 5 images were qualitatively inspected; LIME is stochastic and shows
+  approximate, superpixel-level importance — conclusions are illustrative, not
+  statistically robust. A larger, quantified study (e.g. measuring the fraction
+  of LIME importance falling inside the lesion mask) would strengthen this.
+- The binary collapse of the 7 HAM10000 diagnoses discards finer detail.
+- Future work: add a third architecture, complement LIME with Grad-CAM/SHAP,
+  and address class imbalance with weighted loss or augmentation.
