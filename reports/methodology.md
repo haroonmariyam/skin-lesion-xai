@@ -51,11 +51,32 @@ W&B.)_
 
 | Model | Accuracy | F1 | Precision | Recall | ROC-AUC |
 |-------|----------|----|-----------|--------|---------|
-| ViT | 0.984 | 0.958 | 0.960 | 0.957 | 0.998 |
-| ResNet-50 | _(run next)_ | | | | |
+| ViT | 0.984 | 0.958 | 0.960 | **0.957** | **0.998** |
+| ResNet-50 | **0.989** | **0.973** | **0.965** | **0.980** | 0.996 |
 
-> Training: 3 epochs, batch size 32, lr 5e-5, seed 42, Kaggle T4 GPU.
-> ViT validation recall climbed 0.63 → 0.87 → 0.96 across epochs (see W&B).
+> Hardware/seed: Kaggle T4 GPU, batch size 32, seed 42.
+> **ViT:** 3 epochs, learning rate 5e-5.
+> **ResNet-50:** 5 epochs, learning rate 1e-3.
+
+### Key methodological note
+
+ResNet-50 initially **underfit badly** at the ViT learning rate (5e-5): after
+3 epochs its training loss had barely moved (0.81 → 0.69) and recall was only
+0.17 — essentially the majority-class baseline. Raising the learning rate to
+1e-3 and training for 5 epochs let it converge properly (recall 0.31 → 0.96
+across epochs). This illustrates that CNNs and Vision Transformers have
+**different optimal learning rates**, and that a single shared hyperparameter
+setting can unfairly disadvantage one architecture. The comparison above uses
+each model's properly-tuned configuration.
+
+### Headline finding
+
+Once both were fairly trained, performance was **very close**. ResNet-50 edged
+ahead on recall (0.980 vs 0.957) and F1 (0.973 vs 0.958) — important for a
+screening task where missing a malignant case is costly — while ViT had a
+marginally higher ROC-AUC (0.998 vs 0.996). The explainability analysis (next
+section) examines whether they reach these similar scores by looking at the
+**same** image regions.
 
 Confusion matrices: see `reports/figures/`.
 
