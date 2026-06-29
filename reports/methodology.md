@@ -51,8 +51,11 @@ W&B.)_
 
 | Model | Accuracy | F1 | Precision | Recall | ROC-AUC |
 |-------|----------|----|-----------|--------|---------|
-| ViT | | | | | |
-| ResNet-50 | | | | | |
+| ViT | 0.984 | 0.958 | 0.960 | 0.957 | 0.998 |
+| ResNet-50 | _(run next)_ | | | | |
+
+> Training: 3 epochs, batch size 32, lr 5e-5, seed 42, Kaggle T4 GPU.
+> ViT validation recall climbed 0.63 → 0.87 → 0.96 across epochs (see W&B).
 
 Confusion matrices: see `reports/figures/`.
 
