@@ -14,14 +14,13 @@ dependencies = [
     "transformers>=4.40",    # HuggingFace models (ViT, ResNet) + Trainer
     "datasets>=2.19",        # HuggingFace datasets (loads HAM10000)
     "accelerate>=0.30",      # makes the HuggingFace Trainer run on GPU/CPU
-    "evaluate>=0.4",         # standard metric implementations
     "scikit-learn>=1.4",     # metrics (F1, ROC-AUC, confusion matrix)
     "scikit-image>=0.22",    # image segmentation used by LIME
     "lime>=0.2.0.1",         # the explainability technique
     "wandb>=0.17",           # Weights & Biases experiment tracking
     "matplotlib>=3.8",       # plotting figures for the report
     "pandas>=2.2",           # tabular data handling
-    "numpy>=1.26,<2.0",      # arrays (pinned <2.0 for library compatibility)
+    "numpy>=1.26",           # arrays
     "pillow>=10.0",          # image loading
 ]
 
