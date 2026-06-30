@@ -5,7 +5,7 @@ malignant** skin-lesion classification, using **LIME** to make their
 predictions interpretable. Built with HuggingFace, tracked with Weights &
 Biases, and packaged reproducibly with UV.
 
-> **Why this matters:** In medical AI, an accurate model is not enough — a
+> **Why this matters:** In medical AI, an accurate model is not enough: a
 > clinician needs to know *why* a prediction was made. This project measures
 > not just *how well* two models classify lesions, but *whether they look at
 > the right things* when they do.
@@ -14,7 +14,7 @@ Biases, and packaged reproducibly with UV.
 
 ## ⚠️ Project status & disclosure
 
-> **Work in progress — not yet independently reviewed, tested, or reproduced.**
+> **Work in progress: not yet independently reviewed, tested, or reproduced.**
 > The results reported here come from initial training runs and a small,
 > qualitative LIME analysis (5 test images). They have **not** been
 > independently verified, the experiments have not been repeated across multiple
@@ -34,8 +34,8 @@ Biases, and packaged reproducibly with UV.
 
 1. **Build a reproducible pipeline** to fine-tune image classifiers on the
    HAM10000 dermatoscopy dataset for a binary (benign/malignant) task.
-2. **Compare two architecture families** — a Vision Transformer (ViT) and a
-   convolutional network (ResNet-50) — on the same data and metrics.
+2. **Compare two architecture families**, a Vision Transformer (ViT) and a
+   convolutional network (ResNet-50), on the same data and metrics.
 3. **Apply LIME explainability** to both models and assess *where* each model
    focuses when making a decision.
 4. **Evaluate beyond accuracy**, using metrics appropriate for imbalanced
@@ -138,7 +138,7 @@ uv run python scripts/03_explain.py --model-dir models/resnet-ham10000-binary
 
 ## Results
 
-See [`reports/methodology.md`](reports/methodology.md) — fill in the metrics
+See [`reports/methodology.md`](reports/methodology.md) and fill in the metrics
 table and LIME comparison as you complete each run.
 
 ## Tech stack

@@ -58,7 +58,7 @@ for key in ["vit", "resnet"]:
         shutil.make_archive(f"/kaggle/working/{key}_model", "zip", found[0])
         print(f"✅ {key}: zipped from {found[0]}")
     else:
-        print(f"⚠️ {key}: no model found — train it first")
+        print(f"⚠️ {key}: no model found, train it first")
 ```
 
 ## After downloading
