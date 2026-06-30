@@ -1,53 +1,41 @@
 # Training on Kaggle
 
-Training deep image models needs a GPU. Kaggle gives you one for free (~30
-hrs/week) and already hosts HAM10000, so this is where the heavy `02_train.py`
-step should run. Your laptop stays the place where you write code, run LIME on
-a few images, and keep the Git history.
+Training runs on Kaggle for the free GPU; HAM10000 is pulled from the Hub. The
+local repo handles development, LIME, and version control.
 
-## One-time setup
+## Setup
 
-1. Create a free account at <https://www.kaggle.com>.
-2. In a new notebook, open **Settings → Accelerator → GPU T4 x2**.
-3. Get a Weights & Biases key from <https://wandb.ai/authorize>. In the Kaggle
-   notebook, add it under **Add-ons → Secrets** as `WANDB_API_KEY`.
+1. Notebook **Settings → Accelerator → GPU T4 x2**.
+2. Add the Weights & Biases key (<https://wandb.ai/authorize>) under
+   **Add-ons → Secrets** as `WANDB_API_KEY`.
 
-## In the Kaggle notebook
+## Notebook
 
 ```python
-# 1. Install only the libraries Kaggle lacks. We do NOT reinstall torch:
-#    Kaggle already ships a GPU build, and replacing it can break the GPU.
+# torch ships with Kaggle's GPU image; only install what's missing.
 !pip install -q lime wandb -U "transformers>=4.41" "datasets>=2.19"
 
-# 2. Log in to Weights & Biases using the Kaggle secret
-from kaggle_secrets import UserSecretsClient
 import os, wandb
+from kaggle_secrets import UserSecretsClient
 os.environ["WANDB_API_KEY"] = UserSecretsClient().get_secret("WANDB_API_KEY")
 wandb.login()
 
-# 3. Pull this project's code
 !git clone https://github.com/haroonmariyam/skin-lesion-xai.git
 
-# 4. Make the package importable. Pointing Python at the source folder is the
-#    most reliable approach on Kaggle (editable pip installs can fail to
-#    register on the kernel's import path).
+# Editable installs are unreliable on Kaggle's kernel; add src to the path.
 import sys
 sys.path.insert(0, "/kaggle/working/skin-lesion-xai/src")
 
-# 5. Smoke-test first (10% of data, 1 epoch) to confirm everything runs:
 from skin_lesion_xai import train
-train.train(model_key="vit", subset_fraction=0.1, epochs=1)
-
-# 5. Once that works, do the full runs (one per model):
+train.train(model_key="vit", subset_fraction=0.1, epochs=1)  # smoke-test
 # train.train(model_key="vit")
 # train.train(model_key="resnet")
 ```
 
-## Saving the trained models off Kaggle
+## Exporting the trained models
 
-Models are saved under the project's own `models/` folder, which on Kaggle is
-inside the cloned repo. Zip each one and download it from the **Output** panel.
-This `glob` finds the model wherever it lives, so the path never bites you:
+Models are written to `models/` inside the cloned repo. Zip and download from
+the **Output** panel:
 
 ```python
 import shutil, glob
@@ -56,17 +44,11 @@ for key in ["vit", "resnet"]:
                       recursive=True)
     if found:
         shutil.make_archive(f"/kaggle/working/{key}_model", "zip", found[0])
-        print(f"✅ {key}: zipped from {found[0]}")
-    else:
-        print(f"⚠️ {key}: no model found, train it first")
+
 ```
 
-## After downloading
+Unzip into `models/` locally, then:
 
-- Unzip each model into `models/` on your laptop, e.g.
-  `models/vit-ham10000-binary/` and `models/resnet-ham10000-binary/`.
-- Run `uv run python scripts/03_explain.py --model-dir models/<name>` locally to
-  generate the LIME figures for your report.
-
-> Tip: do one quick `train.train(model_key="vit", subset_fraction=0.1,
-> epochs=1)` first to confirm everything runs before a full training job.
+```bash
+uv run python scripts/03_explain.py --model-dir models/vit-ham10000-binary
+```
