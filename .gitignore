@@ -1,4 +1,3 @@
-# Python-generated files
 __pycache__/
 *.py[oc]
 build/
@@ -6,14 +5,10 @@ dist/
 wheels/
 *.egg-info
 
-# Virtual environments
 .venv
 
-# Secrets / credentials (NEVER commit these)
 .env
 
-# Datasets and model weights are large — keep them out of Git.
-# We track the folders (via .gitkeep) but not their contents.
 data/*
 !data/.gitkeep
 models/
@@ -22,14 +17,9 @@ checkpoints/
 *.pth
 *.safetensors
 
-# Experiment-tracking + caches
 wandb/
 .cache/
 runs/
 
-# Generated report figures are kept (they are small + useful in the repo),
-# so figures/ is intentionally NOT ignored.
-
-# OS / editor cruft
 .DS_Store
 .ipynb_checkpoints/
