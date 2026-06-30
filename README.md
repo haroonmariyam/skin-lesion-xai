@@ -26,10 +26,7 @@ Biases, and packaged reproducibly with UV.
 > **Claude Code** (Anthropic's agentic coding tool), partly as a test case to
 > evaluate how such tools perform on a real, end-to-end machine-learning
 > workflow (environment setup, training on Kaggle, experiment tracking, and
-> explainability). The methodology, decisions, and results were directed and
-> reviewed by the author, but readers should be aware that significant portions
-> of the scaffolding, code, and documentation were AI-assisted and still warrant
-> careful human verification.
+> explainability).
 
 ---
 
