@@ -1,10 +1,4 @@
-"""Loading the HuggingFace models we compare.
-
-Both models are pretrained on ImageNet (1000 classes). We swap their final
-classification head for a fresh 2-class head (benign / malignant). This is
-called *transfer learning*: keep the general visual features, retrain the
-decision layer for our task.
-"""
+"""Load the HuggingFace models with a fresh 2-class head (transfer learning)."""
 
 from __future__ import annotations
 
@@ -14,12 +8,10 @@ from . import config
 
 
 def load_model_and_processor(model_key: str):
-    """Return (model, image_processor) for a key in config.MODELS.
+    """Return (model, image_processor) for "vit" or "resnet".
 
-    `model_key` is "vit" or "resnet".
-
-    `ignore_mismatched_sizes=True` lets us replace the original 1000-class head
-    with our 2-class head without an error.
+    The pretrained 1000-class head is replaced with a 2-class head;
+    `ignore_mismatched_sizes=True` allows that swap.
     """
     if model_key not in config.MODELS:
         raise KeyError(
@@ -27,9 +19,7 @@ def load_model_and_processor(model_key: str):
         )
 
     checkpoint = config.MODELS[model_key]
-
     image_processor = AutoImageProcessor.from_pretrained(checkpoint)
-
     model = AutoModelForImageClassification.from_pretrained(
         checkpoint,
         num_labels=config.NUM_LABELS,

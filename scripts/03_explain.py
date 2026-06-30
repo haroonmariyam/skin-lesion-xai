@@ -1,12 +1,6 @@
-"""Step 3 — generate LIME explanations for a trained model.
+"""Run LIME on a trained model and save the explanation figures.
 
-Run AFTER training, e.g.:
-  uv run python scripts/03_explain.py --model-dir models/vit-ham10000-binary --n 5
-
-It loads the fine-tuned model, picks a few test images, runs LIME on each, and
-saves the highlighted-region figures to reports/figures/. Run it for BOTH
-trained models, then compare the figures side by side in your report: do ViT
-and ResNet focus on the same part of the lesion?
+    uv run python scripts/03_explain.py --model-dir models/vit-ham10000-binary --n 5
 """
 
 from __future__ import annotations
@@ -31,7 +25,7 @@ def main() -> None:
     args = parser.parse_args()
 
     model_dir = Path(args.model_dir)
-    tag = model_dir.name  # e.g. "vit-ham10000-binary"
+    tag = model_dir.name
     model, processor = explain.load_trained(model_dir)
 
     print("Loading test images...")

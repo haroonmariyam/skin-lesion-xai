@@ -1,16 +1,8 @@
 """LIME explanations for the trained classifiers.
 
-LIME (Local Interpretable Model-agnostic Explanations) answers: "WHICH parts
-of *this* image made the model predict malignant?" It works by:
-  1. Splitting the image into small regions (superpixels).
-  2. Turning regions on/off thousands of times and watching how the model's
-     prediction changes.
-  3. Fitting a simple, interpretable model to those results to score each
-     region's importance.
-
-Because LIME only needs the model's predict function (not its internals), the
-*exact same* explainer works for both ViT and ResNet — which is what makes a
-fair side-by-side comparison possible.
+LIME perturbs superpixels and fits a local linear model to score region
+importance. It only needs a predict function, so the same code works for
+both ViT and ResNet.
 """
 
 from __future__ import annotations
@@ -27,21 +19,16 @@ from . import config
 
 
 def load_trained(model_dir: str | Path):
-    """Reload a fine-tuned model + its image processor from disk."""
+    """Reload a fine-tuned model and its processor from disk."""
     model_dir = str(model_dir)
     model = AutoModelForImageClassification.from_pretrained(model_dir)
     processor = AutoImageProcessor.from_pretrained(model_dir)
-    model.eval()  # turn off training-only behaviour (dropout, etc.)
+    model.eval()
     return model, processor
 
 
 def make_predict_fn(model, processor):
-    """Build the function LIME calls: images (numpy) -> class probabilities.
-
-    LIME passes a batch of RGB images as a numpy array of shape
-    (N, H, W, 3) with values in 0-255. We convert each to the tensor the model
-    expects, run a forward pass, and return softmax probabilities.
-    """
+    """Return the predict function LIME calls: (N, H, W, 3) uint8 -> probs."""
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
 
@@ -52,8 +39,7 @@ def make_predict_fn(model, processor):
         inputs = processor(pil_images, return_tensors="pt").to(device)
         with torch.no_grad():
             logits = model(**inputs).logits
-        probs = torch.softmax(logits, dim=-1)
-        return probs.cpu().numpy()
+        return torch.softmax(logits, dim=-1).cpu().numpy()
 
     return predict
 
@@ -75,7 +61,7 @@ def explain_image(
         predict_fn,
         top_labels=config.NUM_LABELS,
         hide_color=0,
-        num_samples=num_samples,  # more samples = sharper but slower
+        num_samples=num_samples,
     )
     predicted_label = int(explanation.top_labels[0])
     return explanation, predicted_label
@@ -92,8 +78,6 @@ def save_explanation_figure(
     import matplotlib.pyplot as plt
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-
-    # Regions that pushed the prediction toward the chosen class.
     temp, mask = explanation.get_image_and_mask(
         predicted_label,
         positive_only=True,

@@ -1,14 +1,8 @@
-"""Step 2 — fine-tune one model and log everything to Weights & Biases.
+"""Fine-tune one model, logging to Weights & Biases.
 
-Examples:
-  # Quick smoke-test on 10% of the data (good for checking it all runs):
-  uv run python scripts/02_train.py --model vit --subset 0.1 --epochs 1
-
-  # Full training run:
-  uv run python scripts/02_train.py --model vit
-  uv run python scripts/02_train.py --model resnet
-
-Run it once per model so you get two comparable W&B runs.
+    uv run python scripts/02_train.py --model vit --subset 0.1 --epochs 1  # quick test
+    uv run python scripts/02_train.py --model vit                          # full run
+    uv run python scripts/02_train.py --model resnet
 """
 
 from __future__ import annotations

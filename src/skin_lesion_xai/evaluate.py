@@ -1,9 +1,4 @@
-"""Evaluation metrics and plots.
-
-For a medical screening task, raw accuracy is misleading because the classes
-are imbalanced (far more benign than malignant). So we also report F1, recall
-(how many malignant cases we catch), precision, and ROC-AUC.
-"""
+"""Metrics and plots. Classes are imbalanced, so report F1/recall/ROC-AUC."""
 
 from __future__ import annotations
 
@@ -24,17 +19,12 @@ from . import config
 
 
 def _softmax(logits: np.ndarray) -> np.ndarray:
-    """Convert raw model scores (logits) into probabilities that sum to 1."""
     e = np.exp(logits - logits.max(axis=-1, keepdims=True))
     return e / e.sum(axis=-1, keepdims=True)
 
 
 def compute_metrics(eval_pred):
-    """Metric function in the exact shape the HuggingFace Trainer expects.
-
-    `eval_pred` is a tuple (logits, labels). Returns a dict of scalar metrics,
-    all of which the Trainer automatically logs to Weights & Biases.
-    """
+    """Metrics in the format the HuggingFace Trainer expects: (logits, labels)."""
     logits, labels = eval_pred
     logits = np.asarray(logits)
     labels = np.asarray(labels)
@@ -48,7 +38,7 @@ def compute_metrics(eval_pred):
         "f1": f1_score(labels, preds, zero_division=0),
         "precision": precision_score(labels, preds, zero_division=0),
         "recall": recall_score(labels, preds, zero_division=0),
-        # ROC-AUC needs both classes present in the batch; guard against errors.
+        # ROC-AUC needs both classes present.
         "roc_auc": roc_auc_score(labels, malignant_prob)
         if len(np.unique(labels)) > 1
         else float("nan"),
@@ -56,7 +46,7 @@ def compute_metrics(eval_pred):
 
 
 def save_confusion_matrix(labels, preds, title: str, out_path: Path) -> Path:
-    """Render and save a confusion matrix figure for the report."""
+    """Save a confusion matrix figure."""
     import matplotlib.pyplot as plt
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
